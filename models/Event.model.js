@@ -8,7 +8,7 @@ const eventSchema = new Schema(
         },
         date: {
             type: Date,
-            required: true
+            // required: true
         },
         // time: {
         //     type: String, // Not 100% sure will see if's there a time object?
@@ -33,4 +33,4 @@ const eventSchema = new Schema(
 
 const Event = model("Event", eventSchema);
 
-module.exports = User;
+module.exports = Event;

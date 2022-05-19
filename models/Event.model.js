@@ -4,25 +4,31 @@ const eventSchema = new Schema(
     {
         title: {
             type: String,
-            unique: true,
             required: true
         },
         date: {
             type: Date,
             // required: true
         },
-        time: {
-            type: String, // Not 100% sure will see if's there a time object?
-            // required: true
+        // time: {
+        //     type: String, // Not 100% sure will see if's there a time object?
+        //     required: true
+        // },
+        description: {
+            type: String,
+            required: true
         },
-        description: String,
-        attendees: Array,
-        cost: Number,
+        attendees: [{
+            type: Schema.Types.ObjectId, 
+            ref: 'User' 
+        }],
+        cost: {
+            type: Number,
+            default: 0
+        },
         location: String,
-    },
-    {
-        timestamps: true,
     }
+  
 );
 
 const Event = model("Event", eventSchema);

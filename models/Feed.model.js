@@ -4,24 +4,24 @@ const feedModel = new Schema(
     {
         title: {
             type: String,
-            unique: true,
             required: true
         },
-        cotent: {
-            type: Date,
+        content: {
+            type: String,
             required: true
         },
         postedBy: {
-            type: Schema.User.UserId, 
-            ref: 'User' 
+            type: mongoose.Schema.Types.ObjectId,
+             ref: 'User'
         },
+        time: { 
+            type : Date, 
+            default: Date.now 
+        }
         // picture .... add later i guess
         // likes counter
         // comments
     },
-    {
-        timestamps: true,
-    }
 );
 
 const Feed = model("Feed", feedModel);

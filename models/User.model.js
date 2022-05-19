@@ -17,10 +17,11 @@ const userSchema = new Schema(
       type: String,
       required: true
     },
-    role: {
-      enum: ["admin", "client"]
+    isAdmin: {
+      type: Boolean,
+      defaut: false
     },
-    dogs: []
+    dogs: Array
   },
   {
     // this second object adds extra properties: `createdAt` and `updatedAt`

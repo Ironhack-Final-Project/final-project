@@ -75,16 +75,16 @@ router.post('/signup', (req, res, next) => {
 
 // Login
 router.post('/login', (req, res, next) => {
-  const { email, password } = req.body;
+  const { username, password } = req.body;
 
-  // Check if email or password are provided as empty string 
-  if (email === '' || password === '') {
-    res.status(400).json({ message: "Provide email and password." });
+  // Check if username or password are provided as empty string 
+  if (username === '' || password === '') {
+    res.status(400).json({ message: "Provide username and password." });
     return;
   }
 
-  // Check the users collection if a user with the same email exists
-  User.findOne({ email })
+  // Check the users collection if a user with the same username exists
+  User.findOne({ username })
     .then((foundUser) => {
 
       if (!foundUser) {
@@ -99,10 +99,11 @@ router.post('/login', (req, res, next) => {
       if (passwordCorrect) { // login was successful
 
         // Deconstruct the user object to omit the password
-        const { _id, email } = foundUser;
+        const { _id, username } = foundUser;
 
         // Create an object that will be set as the token payload
-        const payload = { _id, email };
+        const payload = { _id, username
+         };
 
         // Create and sign the token
         const authToken = jwt.sign(

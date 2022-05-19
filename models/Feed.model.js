@@ -11,7 +11,7 @@ const feedModel = new Schema(
             required: true
         },
         postedBy: {
-            type: mongoose.Schema.Types.ObjectId,
+            type: Schema.Types.ObjectId,
              ref: 'User'
         },
         time: { 
@@ -26,4 +26,4 @@ const feedModel = new Schema(
 
 const Feed = model("Feed", feedModel);
 
-module.exports = User;
+module.exports = Feed;

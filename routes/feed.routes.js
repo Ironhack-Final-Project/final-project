@@ -9,13 +9,12 @@ const Feed = require('../models/Feed.model');
 //NEEDS ROUTE GUARD
 
 router.post('/feed', (req, res, next) => {
-    const { title, content, timestamps, postedBy } = req.body;
+    const { title, content, postedBy } = req.body;
 
     const newPost = {
         title, 
         content, 
         postedBy, 
-        timestamps
     }
 
     Feed.create(newPost)

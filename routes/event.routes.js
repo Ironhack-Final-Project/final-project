@@ -38,7 +38,7 @@ router.post('/events', (req, res, next) => {
 
 router.get("/events", (req, res, next) => {
     Event.find()
-        // .populate("")
+        .populate("attendees")
         .then(response => {
             res.json(response)
         })

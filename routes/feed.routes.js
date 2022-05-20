@@ -10,11 +10,11 @@ const Feed = require('../models/Feed.model');
 
 router.post('/feed', (req, res, next) => {
     const { title, content, postedBy } = req.body;
-    console.log(postedBy)
+
     const newPost = {
         title, 
         content, 
-        postedBy: postedBy
+        postedBy, 
     }
 
     Feed.create(newPost)

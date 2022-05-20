@@ -9,13 +9,12 @@ const Feed = require('../models/Feed.model');
 //NEEDS ROUTE GUARD
 
 router.post('/feed', (req, res, next) => {
-    const { title, content, timestamps, postedBy } = req.body;
-
+    const { title, content, postedBy } = req.body;
+    console.log(postedBy)
     const newPost = {
         title, 
         content, 
-        postedBy, 
-        timestamps
+        postedBy: postedBy
     }
 
     Feed.create(newPost)
@@ -35,6 +34,7 @@ router.post('/feed', (req, res, next) => {
 
 router.get("/feed", (req, res, next) => {
     Feed.find()
+        .populate("postedBy")
         .then(response => {
             res.json(response)
         })
@@ -62,7 +62,7 @@ router.get('/feed/:postId', (req, res, next) => {
     }
 
     Feed.findById(postId)
-        // .populate('tasks')
+        .populate('postedBy')
         .then(post => res.json(post))
         .catch(err => {
             console.log("error getting details of a post", err);

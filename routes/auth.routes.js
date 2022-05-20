@@ -31,15 +31,14 @@ router.post('/signup', (req, res, next) => {
       res.status(400).json({ message: 'Password must have at least 6 characters and contain at least one number, one lowercase and one uppercase letter.' });
       return;
     }
-    console.log("username", username)
     // Check the users collection if a user with the same email already exists
   User.findOne({ username })
     .then((foundUser) => {
       // If the user with the same email already exists, send an error response
       if (foundUser) {
         console.log(foundUser)
-        res.status(400).json({ message: "User already exists." });
-        return 
+        return res.status(400).json({ message: "User already exists." });
+         
       }
 
       // If email is unique, proceed to hash the password

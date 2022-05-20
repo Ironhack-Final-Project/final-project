@@ -20,7 +20,7 @@ const userSchema = new Schema(
     },
     isAdmin: {
       type: Boolean,
-      defaut: false
+      default: false
     },
     dogs: Array
   },

@@ -40,7 +40,6 @@ router.post('/signup', (req, res, next) => {
         console.log(foundUser)
         res.status(400).json({ message: "User already exists." });
         return 
-        ;
       }
 
       // If email is unique, proceed to hash the password
@@ -53,6 +52,7 @@ router.post('/signup', (req, res, next) => {
           username,
           email,
           password: hashedPassword,
+          isAdmin: false,
         });
     })
     .then((createdUser) => {
@@ -99,10 +99,13 @@ router.post('/login', (req, res, next) => {
       if (passwordCorrect) { // login was successful
 
         // Deconstruct the user object to omit the password
-        const { _id, username } = foundUser;
+        const { _id, username, isAdmin } = foundUser;
 
         // Create an object that will be set as the token payload
-        const payload = { _id, username
+        const payload = { 
+          _id, 
+          username,
+          isAdmin
          };
 
         // Create and sign the token
@@ -116,7 +119,7 @@ router.post('/login', (req, res, next) => {
         res.json({ authToken: authToken });
       }
       else {
-        res.status(401).json({ message: "Unable to authenticate the user" });
+        res.status(401).json({ message: "The email and password do not match, please try again" });
       }
 
     })

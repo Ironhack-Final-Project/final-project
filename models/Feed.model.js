@@ -15,9 +15,16 @@ const feedModel = new Schema(
              ref: 'User',
              required: true
         },
+        event: {
+            type: Schema.Types.ObjectId,
+             ref: 'Event',
+        },
         time: { 
             type : Date, 
             default: Date.now 
+        },
+        imageUrl: {
+            type: String,
         }
         // picture .... add later i guess
         // likes counter

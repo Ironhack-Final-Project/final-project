@@ -10,7 +10,7 @@ const saltRounds = 10;
 
 // Create Account
 router.post('/signup', (req, res, next) => {
-    const { email, password, username } = req.body;
+    const { email, password, username, imageUrl } = req.body;
 
     // Check if email or password or name are provided as empty string 
     if (email === '' || password === '' || username === '') {
@@ -52,6 +52,7 @@ router.post('/signup', (req, res, next) => {
           email,
           password: hashedPassword,
           isAdmin: false,
+          imageUrl
         });
     })
     .then((createdUser) => {
@@ -98,13 +99,14 @@ router.post('/login', (req, res, next) => {
       if (passwordCorrect) { // login was successful
 
         // Deconstruct the user object to omit the password
-        const { _id, username, isAdmin } = foundUser;
+        const { _id, username, isAdmin, imageUrl } = foundUser;
 
         // Create an object that will be set as the token payload
         const payload = { 
           _id, 
           username,
-          isAdmin
+          isAdmin,
+          imageUrl
          };
 
         // Create and sign the token

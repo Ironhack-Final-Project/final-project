@@ -22,6 +22,9 @@ const userSchema = new Schema(
       type: Boolean,
       default: false
     },
+    imageUrl: {
+      type: String,
+      default: 'https://res.cloudinary.com/diqphio4g/image/upload/v1653229032/movie-gallery/defaultProfilePic_snkpys.jpg'},
     dogs: Array
   },
   {

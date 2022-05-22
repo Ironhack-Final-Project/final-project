@@ -20,7 +20,16 @@ router.post('/feed', (req, res, next) => {
         event
     }
 
-    Feed.create(req.body)
+    if (newPost.event === ''){
+        delete newPost.event
+    }
+
+    if (newPost.imageUrl === ''){
+        delete newPost.imageUrl
+    }
+    console.log(newPost)
+
+    Feed.create(newPost)
         .then(response => res.status(201).json(response))
         .catch(err => {
             console.log("error creating a new post", err);

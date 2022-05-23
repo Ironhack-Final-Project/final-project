@@ -2,20 +2,32 @@ const router = require("express").Router();
 
 const { default: mongoose } = require("mongoose");
 const Feed = require('../models/Feed.model');
+const fileUploader = require("../config/cloudinary.config")
+
 // const  { isAuthenticated } = require("../middleware/jwt.middleware")
 
 //CREATE POSTS
 
 //NEEDS ROUTE GUARD
-
 router.post('/feed', (req, res, next) => {
-    const { title, content, postedBy } = req.body;
-
+    const { title, content, postedBy, imageUrl, event} = req.body;
+    console.log(imageUrl)
     const newPost = {
         title, 
         content, 
-        postedBy, 
+        postedBy,
+        imageUrl,
+        event
     }
+
+    if (newPost.event === ''){
+        delete newPost.event
+    }
+
+    if (newPost.imageUrl === ''){
+        delete newPost.imageUrl
+    }
+    console.log(newPost)
 
     Feed.create(newPost)
         .then(response => res.status(201).json(response))
@@ -34,6 +46,7 @@ router.post('/feed', (req, res, next) => {
 
 router.get("/feed", (req, res, next) => {
     Feed.find()
+        .populate("postedBy")
         .then(response => {
             res.json(response)
         })
@@ -61,7 +74,8 @@ router.get('/feed/:postId', (req, res, next) => {
     }
 
     Feed.findById(postId)
-        // .populate('tasks')
+        .populate('event')
+        .populate('postedBy')
         .then(post => res.json(post))
         .catch(err => {
             console.log("error getting details of a post", err);

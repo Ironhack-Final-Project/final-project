@@ -7,10 +7,11 @@ const User = require("../models/User.model");
 
 const router = express.Router();
 const saltRounds = 10;
+let isAdmin = false
 
 // Create Account
 router.post('/signup', (req, res, next) => {
-    const { email, password, username } = req.body;
+    const { email, password, username, imageUrl, adminKey } = req.body;
 
     // Check if email or password or name are provided as empty string 
     if (email === '' || password === '' || username === '') {
@@ -25,21 +26,24 @@ router.post('/signup', (req, res, next) => {
       return;
     }
 
+    if (adminKey === '7'){
+      isAdmin = true
+    }
+
     // Use regex to validate the password format
     const passwordRegex = /(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,}/;
     if (!passwordRegex.test(password)) {
       res.status(400).json({ message: 'Password must have at least 6 characters and contain at least one number, one lowercase and one uppercase letter.' });
       return;
     }
-    console.log("username", username)
     // Check the users collection if a user with the same email already exists
   User.findOne({ username })
     .then((foundUser) => {
       // If the user with the same email already exists, send an error response
       if (foundUser) {
         console.log(foundUser)
-        res.status(400).json({ message: "User already exists." });
-        return 
+        return res.status(400).json({ message: "User already exists." });
+         
       }
 
       // If email is unique, proceed to hash the password
@@ -52,7 +56,8 @@ router.post('/signup', (req, res, next) => {
           username,
           email,
           password: hashedPassword,
-          isAdmin: false,
+          isAdmin,
+          imageUrl
         });
     })
     .then((createdUser) => {
@@ -99,13 +104,14 @@ router.post('/login', (req, res, next) => {
       if (passwordCorrect) { // login was successful
 
         // Deconstruct the user object to omit the password
-        const { _id, username, isAdmin } = foundUser;
+        const { _id, username, isAdmin, imageUrl } = foundUser;
 
         // Create an object that will be set as the token payload
         const payload = { 
           _id, 
           username,
-          isAdmin
+          isAdmin,
+          imageUrl
          };
 
         // Create and sign the token

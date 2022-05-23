@@ -41,7 +41,6 @@ router.post('/signup', (req, res, next) => {
     .then((foundUser) => {
       // If the user with the same email already exists, send an error response
       if (foundUser) {
-        console.log(foundUser)
         return res.status(400).json({ message: "User already exists." });
          
       }
@@ -73,7 +72,7 @@ router.post('/signup', (req, res, next) => {
     })
     .catch(err => {
       console.log("error creating new user", err);
-      res.status(500).json({ message: "Internal Server Error: error creating new user" })
+      res.status(500).json({ message: "Email already in use" })
     });
 });
 
@@ -135,7 +134,6 @@ router.post('/login', (req, res, next) => {
     });
 });
 
-
 // Verify
 router.get('/verify', isAuthenticated, (req, res, next) => {
  
@@ -148,5 +146,46 @@ router.get('/verify', isAuthenticated, (req, res, next) => {
     // previously set as the token payload
     res.status(200).json(req.payload);
   });
+
+  // Add dogs
+
+  router.put('/user/:userId/add-dog', (req, res, next) => {
+    console.log(req.body)
+    let newDog = {
+      name: req.body.name,
+      breed: req.body.breed,
+      imageUrl: req.body.imageUrl
+    }
+
+    if (newDog.imageUrl === ''){
+      newDog = {
+        name: req.body.name,
+        breed: req.body.breed,
+      }
+    }
+
+    console.log(newDog)
+
+    User.findByIdAndUpdate(req.params.userId, { $push: {dogs: newDog }})
+      .populate("dogs")
+      .then((response) => {
+        res.json(response)
+      })
+      .catch()
+  })
+
+  router.get('/user/:userId/add-dog', (req, res, next) => {
+    User.findById(req.params.userId)
+      .populate("dogs")
+      .then(response => {
+        res.json(response)
+      })
+      .catch(err => {
+        res.status(500).json({
+          message: 'error getting dogs',
+          error: err
+        })
+      })
+  })
 
 module.exports = router;

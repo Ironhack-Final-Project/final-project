@@ -7,10 +7,11 @@ const User = require("../models/User.model");
 
 const router = express.Router();
 const saltRounds = 10;
+let isAdmin = false
 
 // Create Account
 router.post('/signup', (req, res, next) => {
-    const { email, password, username, imageUrl } = req.body;
+    const { email, password, username, imageUrl, adminKey } = req.body;
 
     // Check if email or password or name are provided as empty string 
     if (email === '' || password === '' || username === '') {
@@ -23,6 +24,10 @@ router.post('/signup', (req, res, next) => {
     if (!emailRegex.test(email)) {
       res.status(400).json({ message: 'Provide a valid email address.' });
       return;
+    }
+
+    if (adminKey === '7'){
+      isAdmin = true
     }
 
     // Use regex to validate the password format
@@ -51,7 +56,7 @@ router.post('/signup', (req, res, next) => {
           username,
           email,
           password: hashedPassword,
-          isAdmin: false,
+          isAdmin,
           imageUrl
         });
     })

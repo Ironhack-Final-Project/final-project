@@ -20,7 +20,8 @@ const eventSchema = new Schema(
         },
         attendees: [{
             type: Schema.Types.ObjectId, 
-            ref: 'User' 
+            ref: 'User',
+            unique: true
         }],
         cost: {
             type: Number,

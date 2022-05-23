@@ -4,6 +4,7 @@ const { default: mongoose } = require("mongoose");
 const Event = require('../models/Event.model');
 // const  { isAuthenticated } = require("../middleware/jwt.middleware")
 
+
 //CREATE EVENT
 
 //NEEDS ROUTE GUARD
@@ -77,19 +78,20 @@ router.get('/events/:eventId', (req, res, next) => {
         })
 });
 
-// UPDATE EVENT BY ID
+// UPDATE EVENT ATTENDEES BY ID AND PUSHING
 
 // NEEDS ROUTE GUARD
 
-router.put('/events/:eventId', (req, res, next) => {
+router.put('/events/:eventId/pushAttendee', (req, res, next) => {
     const { eventId } = req.params;
 
     if (!mongoose.Types.ObjectId.isValid(eventId)) {
         res.status(400).json({ message: 'Specified id is not valid' });
         return;
     }
+    console.log(req.body)
 
-    Event.findByIdAndUpdate(eventId, req.body, { new: true })
+    Event.findByIdAndUpdate(eventId, { $push: { attendees: req.body.id } }, { new: true })
         .then((updatedEvent) => res.json(updatedEvent))
         .catch(err => {
             console.log("error updating event", err);
@@ -100,6 +102,30 @@ router.put('/events/:eventId', (req, res, next) => {
         })
 });
 
+// UPDATE EVENT ATTENDEES BY ID AND PUSHING
+
+// NEEDS ROUTE GUARD
+
+
+router.put('/events/:eventId/pullAttendee', (req, res, next) => {
+    const { eventId } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(eventId)) {
+        res.status(400).json({ message: 'Specified id is not valid' });
+        return;
+    }
+    console.log(req.body)
+
+    Event.findByIdAndUpdate(eventId, { $pull: { attendees: req.body.id } }, { new: true })
+        .then((updatedEvent) => res.json(updatedEvent))
+        .catch(err => {
+            console.log("error updating event", err);
+            res.status(500).json({
+                message: "error updating event",
+                error: err
+            });
+        })
+});
 
 // DELETE AN EVENT
 

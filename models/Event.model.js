@@ -2,18 +2,18 @@ const { Schema, model } = require("mongoose");
 
 const eventSchema = new Schema(
     {
-        title: {
+        name: {
             type: String,
             required: true
         },
-        date: {
+        from: {
             type: Date,
-            // required: true
+            required: true
         },
-        // time: {
-        //     type: String, // Not 100% sure will see if's there a time object?
-        //     required: true
-        // },
+        to: {
+            type: Date, 
+            required: true
+        },
         description: {
             type: String,
             required: true
@@ -21,13 +21,29 @@ const eventSchema = new Schema(
         attendees: [{
             type: Schema.Types.ObjectId, 
             ref: 'User',
-            unique: true
         }],
         cost: {
             type: Number,
             default: 0
         },
         location: String,
+        calendar: {enabled:{
+            type: Boolean,
+            default: true
+        }},
+        enabled: {
+            type: Boolean,
+            default: true
+        },
+        is_current:{
+            type: Boolean,
+            default: false
+        },
+        repeat:{
+            type: Number,
+            enum: [0, 1, 2, 3, 4],
+            default: 0
+        }
     }
   
 );

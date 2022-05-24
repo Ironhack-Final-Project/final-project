@@ -1,5 +1,6 @@
 const router = require("express").Router();
 
+
 const { default: mongoose } = require("mongoose");
 const Event = require('../models/Event.model');
 // const  { isAuthenticated } = require("../middleware/jwt.middleware")
@@ -10,16 +11,17 @@ const Event = require('../models/Event.model');
 //NEEDS ROUTE GUARD
 
 router.post('/events', (req, res, next) => {
-    const { title, date, time, description, cost, location } = req.body;
+    const { name, description, from, to, cost, location, repeat, style} = req.body;
 
     const newEvent = {
-        title, 
-        // date: date
-        // time, 
+        name, 
+        from,
+        to, 
         description, 
         cost, 
-        attendees: [],
-        location
+        location,
+        repeat,
+        style
     }
 
     Event.create(newEvent)
@@ -67,7 +69,7 @@ router.get('/events/:eventId', (req, res, next) => {
     }
 
     Event.findById(eventId)
-        // .populate('tasks')
+        .populate('attendees')
         .then(event => res.json(event))
         .catch(err => {
             console.log("error getting details of a event", err);
@@ -156,6 +158,34 @@ router.delete('/events/:eventId', (req, res, next) => {
         })
 });
 
+router.put('/events/pushScheduler', (req, res, next) =>{
+    // const { eventId } = req.body;
 
+    Scheduler.findByIdAndUpdate("628bac80a2ad8420fda0bd60",
+        { $push: { events: req.body } },  { new: true })
+    .then((updatedEvent) => res.json(updatedEvent))
+    .catch(err => {
+        console.log("error updating event", err);
+        res.status(500).json({
+            message: "error updating event",
+            error: err
+        });
+    })
+})
+
+router.get("/events/scheduler", (req, res, next) => {
+    Scheduler.find()
+        .populate("events")
+        .then(response => {
+            res.json(response)
+        })
+        .catch(err => {
+            console.log("error getting list of events", err);
+            res.status(500).json({
+                message: "error getting list of events",
+                error: err
+            });
+        })
+});
 
 module.exports = router;

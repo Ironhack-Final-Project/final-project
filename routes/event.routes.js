@@ -3,6 +3,7 @@ const router = require("express").Router();
 
 const { default: mongoose } = require("mongoose");
 const Event = require('../models/Event.model');
+const User = require("../models/User.model")
 // const  { isAuthenticated } = require("../middleware/jwt.middleware")
 
 
@@ -12,7 +13,6 @@ const Event = require('../models/Event.model');
 
 router.post('/events', (req, res, next) => {
     const { name, description, from, to, cost, location, repeat, style} = req.body;
-
     const newEvent = {
         name, 
         from,
@@ -23,7 +23,8 @@ router.post('/events', (req, res, next) => {
         repeat,
         style
     }
-
+    console.log(newEvent)
+    
     Event.create(newEvent)
         .then(response => res.status(201).json(response))
         .catch(err => {
@@ -94,15 +95,19 @@ router.put('/events/:eventId/pushAttendee', (req, res, next) => {
     console.log(req.body)
 
     Event.findByIdAndUpdate(eventId, { $push: { attendees: req.body.id } }, { new: true })
-        .then((updatedEvent) => res.json(updatedEvent))
-        .catch(err => {
-            console.log("error updating event", err);
-            res.status(500).json({
-                message: "error updating event",
-                error: err
-            });
-        })
-});
+        .then((updatedEvent) => 
+            User.findByIdAndUpdate(req.body.id, { $push: {eventsAttending: eventId}}, {new: true})
+            .then((updatedUser) => res.json(updatedUser))
+                .catch(err => {
+                    console.log("error updating user", err);
+                    res.status(500).json({
+                        message: "error updating user",
+                        error: err
+                    })
+                })
+        )
+})
+    
 
 // UPDATE EVENT ATTENDEES BY ID AND PUSHING
 
@@ -119,14 +124,19 @@ router.put('/events/:eventId/pullAttendee', (req, res, next) => {
     console.log(req.body)
 
     Event.findByIdAndUpdate(eventId, { $pull: { attendees: req.body.id } }, { new: true })
-        .then((updatedEvent) => res.json(updatedEvent))
-        .catch(err => {
-            console.log("error updating event", err);
-            res.status(500).json({
-                message: "error updating event",
-                error: err
-            });
-        })
+        .then((updatedEvent) => {
+            User.findByIdAndUpdate(req.body.id, { $pull: {eventsAttending: eventId}}, {new: true})
+                .then( response => {
+                    res.json(response)
+                })
+                .catch(err => {
+                    console.log("error updating event", err);
+                    res.status(500).json({
+                        message: "error updating event",
+                        error: err
+                    });
+                })
+        }) 
 });
 
 // DELETE AN EVENT

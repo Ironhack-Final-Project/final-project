@@ -18,6 +18,10 @@ const userSchema = new Schema(
       type: String,
       required: true
     },
+    eventsAttending: [{
+      type: Schema.Types.ObjectId, 
+      ref: 'Event',
+    }],
     isAdmin: {
       type: Boolean,
       default: false

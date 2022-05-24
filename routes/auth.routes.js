@@ -174,9 +174,10 @@ router.put('/user/:userId/add-dog', (req, res, next) => {
     .catch()
 })
 
-router.get('/user/:userId/add-dog', (req, res, next) => {
+router.get('/user/:userId', (req, res, next) => {
   User.findById(req.params.userId)
     .populate("dogs")
+    .populate('eventsAttending')
     .then(response => {
       res.json(response)
     })
@@ -188,7 +189,7 @@ router.get('/user/:userId/add-dog', (req, res, next) => {
     })
 })
 
-router.get('/user/:userId', (req, res, next) => {
+router.get('/user/:userId/delete-dog', (req, res, next) => {
   console.log(req.params.userId)
   User.findById(req.params.userId)
     .then(response => { res.json(response) })

@@ -25,7 +25,15 @@ const userSchema = new Schema(
     imageUrl: {
       type: String,
       default: 'https://res.cloudinary.com/diqphio4g/image/upload/v1653229032/movie-gallery/defaultProfilePic_snkpys.jpg'},
-    dogs: Array
+    dogs: [
+      {
+        name: String,
+        breed: String,
+        notes: String,
+        imageUrl: {
+          type: String,
+          default: "https://res.cloudinary.com/diqphio4g/image/upload/v1653315126/movie-gallery/default-dog_let60w.jpg"},
+      }]
   },
   {
     // this second object adds extra properties: `createdAt` and `updatedAt`

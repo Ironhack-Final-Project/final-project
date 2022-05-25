@@ -103,14 +103,15 @@ router.post('/login', (req, res, next) => {
       if (passwordCorrect) { // login was successful
 
         // Deconstruct the user object to omit the password
-        const { _id, username, isAdmin, imageUrl } = foundUser;
+        const { _id, username, isAdmin, imageUrl, dogs } = foundUser;
 
         // Create an object that will be set as the token payload
         const payload = {
           _id,
           username,
           isAdmin,
-          imageUrl
+          imageUrl,
+          dogs
         };
 
         // Create and sign the token
@@ -146,6 +147,22 @@ router.get('/verify', isAuthenticated, (req, res, next) => {
   // previously set as the token payload
   res.status(200).json(req.payload);
 });
+
+
+/// Get all Users
+
+router.get('/users', (req, res, next)=>{
+  User.find()
+  .then(response=>{res.json(response)})
+  .catch(err => {
+    console.log("error getting list of events", err);
+    res.status(500).json({
+        message: "error getting list of events",
+        error: err
+    });
+})
+})
+
 
 // Add dogs
 
@@ -211,5 +228,28 @@ router.put('/user/:userId', (req, res, next) => {
       })
     })
 })
+
+
+router.put('/user/:userId/add-dogcare', (req, res, next) => {
+  console.log(req.body)
+  let newDogcare = {
+    name: req.body.name,
+    from: req.body.from,
+    to: req.body.to,
+    calendar: req.body.calendar,
+    repeat: 0,
+    owner: req.body.owner,
+    dogs: req.body.dogs
+  }
+
+  User.findByIdAndUpdate(req.params.userId, { $push: { dogcare: newDogcare } })
+  .populate("dogcare")
+  .then((response) => {
+    res.json(response)
+  })
+  .catch()
+})
+
+
 
 module.exports = router;

@@ -110,14 +110,15 @@ router.post('/login', (req, res, next) => {
       if (passwordCorrect) { // login was successful
 
         // Deconstruct the user object to omit the password
-        const { _id, username, isAdmin, imageUrl } = foundUser;
+        const { _id, username, isAdmin, imageUrl, dogs } = foundUser;
 
         // Create an object that will be set as the token payload
         const payload = {
           _id,
           username,
           isAdmin,
-          imageUrl
+          imageUrl,
+          dogs
         };
 
         // Create and sign the token
@@ -160,5 +161,109 @@ router.get('/verify', isAuthenticated, (req, res, next) => {
   // previously set as the token payload
   res.status(200).json(req.payload);
 });
+
+
+/// Get all Users
+
+router.get('/users', (req, res, next)=>{
+  User.find()
+  .then(response=>{res.json(response)})
+  .catch(err => {
+    console.log("error getting list of events", err);
+    res.status(500).json({
+        message: "error getting list of events",
+        error: err
+    });
+})
+})
+
+
+// Add dogs
+
+router.put('/user/:userId/add-dog', (req, res, next) => {
+  console.log(req.body)
+  let newDog = {
+    name: req.body.name,
+    breed: req.body.breed,
+    imageUrl: req.body.imageUrl
+  }
+
+  if (newDog.imageUrl === '') {
+    newDog = {
+      name: req.body.name,
+      breed: req.body.breed,
+    }
+  }
+
+  console.log(newDog)
+
+  User.findByIdAndUpdate(req.params.userId, { $push: { dogs: newDog } })
+    .populate("dogs")
+    .then((response) => {
+      res.json(response)
+    })
+    .catch()
+})
+
+router.get('/user/:userId', (req, res, next) => {
+  User.findById(req.params.userId)
+    .populate("dogs")
+    .populate('eventsAttending')
+    .then(response => {
+      res.json(response)
+    })
+    .catch(err => {
+      res.status(500).json({
+        message: 'error getting dogs',
+        error: err
+      })
+    })
+})
+
+router.get('/user/:userId/delete-dog', (req, res, next) => {
+  console.log(req.params.userId)
+  User.findById(req.params.userId)
+    .then(response => { res.json(response) })
+    .catch(err => {
+      res.status(500).json({
+        message: 'error deleting dog',
+        error: err
+      })
+    })
+})
+
+router.put('/user/:userId', (req, res, next) => {
+  User.findByIdAndUpdate(req.body._id, req.body)
+    .then(response => { res.json(response) })
+    .catch(err => {
+      res.status(500).json({
+        message: 'error deleting dog',
+        error: err
+      })
+    })
+})
+
+
+router.put('/user/:userId/add-dogcare', (req, res, next) => {
+  console.log(req.body)
+  let newDogcare = {
+    name: req.body.name,
+    from: req.body.from,
+    to: req.body.to,
+    calendar: req.body.calendar,
+    repeat: 0,
+    owner: req.body.owner,
+    dogs: req.body.dogs
+  }
+
+  User.findByIdAndUpdate(req.params.userId, { $push: { dogcare: newDogcare } })
+  .populate("dogcare")
+  .then((response) => {
+    res.json(response)
+  })
+  .catch()
+})
+
+
 
 module.exports = router;

@@ -41,8 +41,10 @@ router.post('/signup', (req, res, next) => {
     .then((foundUser) => {
       // If the user with the same email already exists, send an error response
       if (foundUser) {
-        return res.status(400).json({ message: "User already exists." });
-
+        // If the user is not found, send an error response
+        const userError = new Error()
+        userError.name = 'usernameError'
+        throw userError
       }
 
       // If email is unique, proceed to hash the password
@@ -71,8 +73,12 @@ router.post('/signup', (req, res, next) => {
       res.status(201).json({ user: user });
     })
     .catch(err => {
-      console.log("error creating new user", err);
-      res.status(500).json({ message: "Email already in use" })
+      console.log(err)
+      if (err.name === 'usernameError'){
+        res.status(401).json({message: "username already in use"})
+      } else {
+        res.status(500).json({ message: "The email you provided is already in use" })
+      }
     });
 });
 
@@ -93,8 +99,9 @@ router.post('/login', (req, res, next) => {
 
       if (!foundUser) {
         // If the user is not found, send an error response
-        res.status(401).json({ message: "User not found." })
-        return;
+        const userError = new Error()
+        userError.name = 'usernameError'
+        throw userError
       }
 
       // Compare the provided password with the one saved in the database
@@ -130,7 +137,14 @@ router.post('/login', (req, res, next) => {
     })
     .catch(err => {
       console.log(err)
-      res.status(500).json({ message: "Internal Server Error" })
+
+      console.log(err)
+
+      if (err.name === 'usernameError'){
+        res.status(401).json({message: "Username not found"})
+      } else {
+        res.status(500).json({ message: "Internal Server Error" })
+      }
     });
 });
 
@@ -146,70 +160,5 @@ router.get('/verify', isAuthenticated, (req, res, next) => {
   // previously set as the token payload
   res.status(200).json(req.payload);
 });
-
-// Add dogs
-
-router.put('/user/:userId/add-dog', (req, res, next) => {
-  console.log(req.body)
-  let newDog = {
-    name: req.body.name,
-    breed: req.body.breed,
-    imageUrl: req.body.imageUrl
-  }
-
-  if (newDog.imageUrl === '') {
-    newDog = {
-      name: req.body.name,
-      breed: req.body.breed,
-    }
-  }
-
-  console.log(newDog)
-
-  User.findByIdAndUpdate(req.params.userId, { $push: { dogs: newDog } })
-    .populate("dogs")
-    .then((response) => {
-      res.json(response)
-    })
-    .catch()
-})
-
-router.get('/user/:userId', (req, res, next) => {
-  User.findById(req.params.userId)
-    .populate("dogs")
-    .populate('eventsAttending')
-    .then(response => {
-      res.json(response)
-    })
-    .catch(err => {
-      res.status(500).json({
-        message: 'error getting dogs',
-        error: err
-      })
-    })
-})
-
-router.get('/user/:userId/delete-dog', (req, res, next) => {
-  console.log(req.params.userId)
-  User.findById(req.params.userId)
-    .then(response => { res.json(response) })
-    .catch(err => {
-      res.status(500).json({
-        message: 'error deleting dog',
-        error: err
-      })
-    })
-})
-
-router.put('/user/:userId', (req, res, next) => {
-  User.findByIdAndUpdate(req.body._id, req.body)
-    .then(response => { res.json(response) })
-    .catch(err => {
-      res.status(500).json({
-        message: 'error deleting dog',
-        error: err
-      })
-    })
-})
 
 module.exports = router;

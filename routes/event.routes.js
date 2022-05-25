@@ -2,16 +2,22 @@ const router = require("express").Router();
 
 
 const { default: mongoose } = require("mongoose");
+const { isAuthenticated } = require("../middleware/jwt.middleware");
 const Event = require('../models/Event.model');
 const User = require("../models/User.model")
-// const  { isAuthenticated } = require("../middleware/jwt.middleware")
 
 
 //CREATE EVENT
 
-//NEEDS ROUTE GUARD
+router.post('/events', isAuthenticated, (req, res, next) => {
 
-router.post('/events', (req, res, next) => {
+    if (!req.payload.isAdmin){
+        notAdmin = new Error('notAdmin')
+        notAdmin.message = 'You are not authroised to perform this action'
+        res.status(401).json(notAdmin.message)
+        throw notAdmin
+    }
+
     const { name, description, from, to, cost, location, repeat, style} = req.body;
     const newEvent = {
         name, 
@@ -111,9 +117,6 @@ router.put('/events/:eventId/pushAttendee', (req, res, next) => {
 
 // UPDATE EVENT ATTENDEES BY ID AND PUSHING
 
-// NEEDS ROUTE GUARD
-
-
 router.put('/events/:eventId/pullAttendee', (req, res, next) => {
     const { eventId } = req.params;
 
@@ -144,6 +147,9 @@ router.put('/events/:eventId/pullAttendee', (req, res, next) => {
 // NEEDS ROUTE GUARD
 
 router.delete('/events/:eventId', (req, res, next) => {
+
+
+    
     const { eventId } = req.params;
 
     if (!mongoose.Types.ObjectId.isValid(eventId)) {

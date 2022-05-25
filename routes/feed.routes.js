@@ -3,13 +3,24 @@ const router = require("express").Router();
 const { default: mongoose } = require("mongoose");
 const Feed = require('../models/Feed.model');
 const fileUploader = require("../config/cloudinary.config")
+const {isAdmin} = require('../middleware/isAdmin.middleware'); 
+const { isAuthenticated } = require("../middleware/jwt.middleware");
 
-// const  { isAuthenticated } = require("../middleware/jwt.middleware")
 
 //CREATE POSTS
 
 //NEEDS ROUTE GUARD
-router.post('/feed', (req, res, next) => {
+router.post('/feed', isAuthenticated, (req, res, next) => {
+
+
+    if (!req.payload.isAdmin){
+        notAdmin = new Error('notAdmin')
+        notAdmin.message = 'You are not authroised to perform this action'
+        res.status(401).json(notAdmin.message)
+        throw notAdmin
+    }
+
+
     const { title, content, postedBy, imageUrl, event} = req.body;
     console.log(imageUrl)
     const newPost = {
@@ -27,7 +38,6 @@ router.post('/feed', (req, res, next) => {
     if (newPost.imageUrl === ''){
         delete newPost.imageUrl
     }
-    console.log(newPost)
 
     Feed.create(newPost)
         .then(response => res.status(201).json(response))
@@ -90,7 +100,15 @@ router.get('/feed/:postId', (req, res, next) => {
 // NOT IN MVP BUT ROUTE IS HERE AND WORKS IF WE HAVE TIME
 // NEEDS ROUTE GUARD
 
-router.put('/feed/:postId', (req, res, next) => {
+router.put('/feed/:postId', isAuthenticated, (req, res, next) => {
+
+    if (!req.payload.isAdmin){
+        notAdmin = new Error('notAdmin')
+        notAdmin.message = 'You are not authroised to perform this action'
+        res.status(401).json(notAdmin.message)
+        throw notAdmin
+    }
+    
     const { postId } = req.params;
 
     if (!mongoose.Types.ObjectId.isValid(postId)) {

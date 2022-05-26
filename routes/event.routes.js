@@ -18,7 +18,7 @@ router.post('/events', isAuthenticated, (req, res, next) => {
         throw notAdmin
     }
 
-    const { name, description, from, to, cost, location, repeat, style} = req.body;
+    const { name, description, from, to, cost, location, repeat, style, imageUrl} = req.body;
     const newEvent = {
         name, 
         from,
@@ -27,7 +27,8 @@ router.post('/events', isAuthenticated, (req, res, next) => {
         cost, 
         location,
         repeat,
-        style
+        style,
+        imageUrl
     }
     console.log(newEvent)
     

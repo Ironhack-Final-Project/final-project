@@ -15,8 +15,8 @@ router.post('/feed', isAuthenticated, (req, res, next) => {
 
     if (!req.payload.isAdmin){
         notAdmin = new Error('notAdmin')
-        notAdmin.message = 'You are not authroised to perform this action'
-        res.status(401).json(notAdmin.message)
+        notAdmin.message = 'You are not authorised to perform this action'
+        res.status(404).json(notAdmin.message)
         throw notAdmin
     }
 
@@ -42,11 +42,8 @@ router.post('/feed', isAuthenticated, (req, res, next) => {
     Feed.create(newPost)
         .then(response => res.status(201).json(response))
         .catch(err => {
-            console.log("error creating a new post", err);
-            res.status(500).json({
-                message: "Error creating a new post, please make sure the post has a title and content",
-                error: err
-            });
+            err.message = "Error creating a new post, please make sure the post has a title and content",
+            res.status(500).json(err.message);
         })
 });
 
@@ -109,8 +106,6 @@ router.put('/feed/:postId', isAuthenticated, (req, res, next) => {
         throw notAdmin
     }
 
-    console.log(req.body)
-
     if (req.body.title === ''){
         titleError = new Error()
         titleError.message = "Please provide a title"
@@ -133,11 +128,8 @@ router.put('/feed/:postId', isAuthenticated, (req, res, next) => {
     Feed.findByIdAndUpdate(postId, req.body, { new: true })
         .then((updatedPost) => res.json(updatedPost))
         .catch(err => {
-            console.log("error updating event", err);
-            res.status(500).json({
-                message: "error updating event",
-                error: err
-            });
+            err.message = "Error updating event"
+            res.status(500).json(err.message);
         })
 });
 

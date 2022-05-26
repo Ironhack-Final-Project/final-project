@@ -165,15 +165,21 @@ router.get('/verify', isAuthenticated, (req, res, next) => {
 
 /// Get all Users
 
-router.get('/users', (req, res, next)=>{
+router.get('/users', isAuthenticated, (req, res, next)=>{
+  if (!req.payload.isAdmin){
+    notAdmin = new Error('notAdmin')
+    notAdmin.message = 'You are not authroised to perform this action'
+    res.status(401).json(notAdmin.message)
+    throw notAdmin
+}
+
   User.find()
-  .then(response=>{res.json(response)})
-  .catch(err => {
-    console.log("error getting list of events", err);
-    res.status(500).json({
-        message: "error getting list of events",
-        error: err
-    });
+    .then(response=>{res.json(response)})
+    .catch(err => {
+      res.status(404).json({
+          message: "You are unauthorised to view this page",
+          error: err
+      });
 })
 })
 

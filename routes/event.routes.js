@@ -13,7 +13,7 @@ router.post('/events', isAuthenticated, (req, res, next) => {
 
     if (!req.payload.isAdmin){
         notAdmin = new Error('notAdmin')
-        notAdmin.message = 'You are not authroised to perform this action'
+        notAdmin.message = 'You are not authorised to perform this action'
         res.status(401).json(notAdmin.message)
         throw notAdmin
     }
@@ -35,11 +35,8 @@ router.post('/events', isAuthenticated, (req, res, next) => {
     Event.create(newEvent)
         .then(response => res.status(201).json(response))
         .catch(err => {
-            console.log("error creating a new project", err);
-            res.status(500).json({
-                message: "Error creating a new project, please make sure that you have filled in the name, dates and description fields",
-                error: err
-            });
+            err.message = "Error creating a new event, please make sure that you have filled in the name, dates and description fields",
+            res.status(500).json(err.message);
         })
 });
 

@@ -4,6 +4,14 @@ const router = express.Router();
 
 //Add Dog
 router.put('/user/:userId/add-dog', (req, res, next) => {
+
+    if (req.body.name === '' || req.body.breed === ''){
+        let newError = new Error()
+        newError.message = "Please provide a name and breed"
+       
+        res.status(500).json(newError.message)
+        throw newError
+    }
     console.log(req.body)
     let newDog = {
         name: req.body.name,

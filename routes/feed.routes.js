@@ -104,7 +104,7 @@ router.put('/feed/:postId', isAuthenticated, (req, res, next) => {
 
     if (!req.payload.isAdmin){
         notAdmin = new Error('notAdmin')
-        notAdmin.message = 'You are not authroised to perform this action'
+        notAdmin.message = 'You are not authorised to perform this action'
         res.status(401).json(notAdmin.message)
         throw notAdmin
     }

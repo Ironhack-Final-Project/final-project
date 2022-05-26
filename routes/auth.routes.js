@@ -244,7 +244,7 @@ router.put('/user/:userId', (req, res, next) => {
 })
 
 
-router.put('/user/:userId/add-dogcare', (req, res, next) => {
+router.put('/user/:userId/add-dogcare', isAuthenticated, (req, res, next) => {
   console.log(req.body)
   let newDogcare = {
     name: req.body.name,

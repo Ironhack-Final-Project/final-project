@@ -44,7 +44,7 @@ router.post('/feed', isAuthenticated, (req, res, next) => {
         .catch(err => {
             console.log("error creating a new post", err);
             res.status(500).json({
-                message: "error creating a new post",
+                message: "Error creating a new post, please make sure the post has a title and content",
                 error: err
             });
         })
@@ -107,6 +107,20 @@ router.put('/feed/:postId', isAuthenticated, (req, res, next) => {
         notAdmin.message = 'You are not authroised to perform this action'
         res.status(401).json(notAdmin.message)
         throw notAdmin
+    }
+
+    console.log(req.body)
+
+    if (req.body.title === ''){
+        titleError = new Error()
+        titleError.message = "Please provide a title"
+        res.status(500).json(titleError.message)
+        throw titleError
+    } else if (req.body.content === ''){
+        titleError = new Error()
+        titleError.message = "Please provide content"
+        res.status(500).json(titleError.message)
+        throw titleError
     }
     
     const { postId } = req.params;

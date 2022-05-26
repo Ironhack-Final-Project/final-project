@@ -36,7 +36,7 @@ router.post('/events', isAuthenticated, (req, res, next) => {
         .catch(err => {
             console.log("error creating a new project", err);
             res.status(500).json({
-                message: "error creating a new project",
+                message: "Error creating a new project, please make sure that you have filled in the name, dates and description fields",
                 error: err
             });
         })
